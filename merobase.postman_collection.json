@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "MEROBase API",
+    "_postman_id": "merobase-002",
+    "description": "Postman collection for MEROBase backend API with sample data",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Samples",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/samples",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "samples"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Add New Sample",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sampleName\": \"Example Coral\",\n  \"collectionDate\": \"2025-11-02\",\n  \"species\": \"Acropora\",\n  \"genus\": \"Acropora\",\n  \"family\": \"Acroporidae\",\n  \"kingdom\": \"Animalia\",\n  \"projectType\": \"A\",\n  \"projectNumber\": 1,\n  \"sampleNumber\": 1,\n  \"samplePhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"semPhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"isolatedPhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"latitude\": -8.67,\n  \"longitude\": 115.45\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/samples",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "samples"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Sample by ID",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sampleName\": \"Updated Coral\",\n  \"collectionDate\": \"2025-11-02\",\n  \"species\": \"Acropora\",\n  \"genus\": \"Acropora\",\n  \"family\": \"Acroporidae\",\n  \"kingdom\": \"Animalia\",\n  \"projectType\": \"A\",\n  \"projectNumber\": 1,\n  \"sampleNumber\": 1,\n  \"samplePhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"semPhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"isolatedPhoto\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA\",\n  \"latitude\": -8.67,\n  \"longitude\": 115.45\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/samples/:id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "samples", ":id"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Sample by ID",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/samples/:id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "samples", ":id"]
+        }
+      },
+      "response": []
+    }
+  ]
+}
