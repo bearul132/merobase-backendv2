@@ -3,10 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import sampleRoutes from "./routes/sampleRoutes.js";
 
-// Initialize app
 const app = express();
 
-// Use Shared Variables / Environment Variables
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -15,15 +13,28 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: "10mb" })); // for JSON including images
+// ✅ CORS setup for your deployed frontend on Vercel
+app.use(
+  cors({
+    origin: [
+      "https://merobase-frontendv2.vercel.app", // your live frontend
+      "http://localhost:5173", // for local dev testing
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// ✅ API routes
 app.use("/api/samples", sampleRoutes);
 
-// MongoDB connection
+// ✅ Simple health check
+app.get("/", (req, res) => res.send("🚀 MEROBase backend is running"));
+
+// ✅ MongoDB connection
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -35,8 +46,5 @@ mongoose
     process.exit(1);
   });
 
-// Health check route
-app.get("/", (req, res) => res.send("🚀 MEROBase backend is running"));
-
-// Start server
+// ✅ Start server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
