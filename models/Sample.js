@@ -1,9 +1,7 @@
-import mongoose from "mongoose";
-
 const sampleSchema = new mongoose.Schema({
   sampleID: String,
   sampleName: String,
-  collectionDate: String,
+  collectionDate: Date,
   species: String,
   genus: String,
   family: String,
@@ -16,7 +14,5 @@ const sampleSchema = new mongoose.Schema({
   samplePhoto: String,
   semPhoto: String,
   isolatedPhoto: String,
-  lastUpdated: String,
+  lastEdited: { type: Date, default: Date.now }, // ✅ Add this
 });
-
-export default mongoose.model("Sample", sampleSchema);

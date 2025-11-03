@@ -27,20 +27,27 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update sample by sampleID
+// Update sample by sampleID (with lastEdited)
 router.put("/:sampleID", async (req, res) => {
   try {
+    const updatedData = {
+      ...req.body,
+      lastEdited: new Date(), // ✅ Automatically set lastEdited timestamp
+    };
+
     const updated = await Sample.findOneAndUpdate(
       { sampleID: req.params.sampleID },
-      req.body,
-      { new: true }
+      updatedData,
+      { new: true } // ✅ Return updated document
     );
+
     if (!updated) {
       console.warn(`⚠️ Sample with ID ${req.params.sampleID} not found`);
       return res.status(404).json({ message: "Sample not found" });
     }
+
     console.log("✅ Sample updated:", updated.sampleID);
-    res.json(updated);
+    res.json(updated); // ✅ Send updated sample back
   } catch (err) {
     console.error("❌ Error updating sample:", err.message);
     res.status(400).json({ error: err.message });
