@@ -63,4 +63,16 @@ router.delete("/:sampleID", async (req, res) => {
   }
 });
 
+// 🧹 Delete ALL samples
+router.delete("/", async (req, res) => {
+  try {
+    await Sample.deleteMany({});
+    console.log("🧹 All samples deleted successfully");
+    res.status(200).json({ message: "All samples deleted successfully" });
+  } catch (err) {
+    console.error("❌ Error deleting all samples:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
