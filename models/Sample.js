@@ -1,18 +1,22 @@
+import mongoose from "mongoose";
+
 const sampleSchema = new mongoose.Schema({
   sampleID: String,
   sampleName: String,
-  collectionDate: Date,
   species: String,
   genus: String,
   family: String,
   kingdom: String,
   projectType: String,
-  projectNumber: Number,
-  sampleNumber: Number,
-  latitude: Number,
-  longitude: Number,
+  collectorName: String,
+  collectionDate: Date,
+  latitude: String,
+  longitude: String,
   samplePhoto: String,
   semPhoto: String,
   isolatedPhoto: String,
-  lastEdited: { type: Date, default: Date.now }, // ✅ Add this
+  lastEdited: Date,
 });
+
+const Sample = mongoose.model("Sample", sampleSchema);
+export default Sample; // ✅ default export

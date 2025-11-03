@@ -1,5 +1,5 @@
 import express from "express";
-import Sample from "../models/Sample.js";
+import Sample from "../models/Sample.js"; // works now because Sample.js has default export
 
 const router = express.Router();
 
