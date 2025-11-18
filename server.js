@@ -5,12 +5,12 @@ import sampleRoutes from "./routes/sampleRoutes.js";
 
 const app = express();
 
+// ✅ CORS setup – allow your deployed frontend + localhost
 const allowedOrigins = [
-  "https://merobase-frontendv2.vercel.app",
-  "http://localhost:5173"
+  "https://merobase-frontendv2.vercel.app", // your Vercel app
+  "http://localhost:5173" // local development
 ];
 
-// ✅ Use dynamic origin handling
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -26,25 +26,39 @@ app.use(
   })
 );
 
-// ❌ REMOVE this line — it interferes with Railway preflight handling
-// app.options("*", cors());
-
+// ✅ Body parser (with size limit for image uploads)
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ API routes
 app.use("/api/samples", sampleRoutes);
 
-app.get("/", (req, res) => res.send("🚀 MEROBase backend is running"));
+// ✅ Root route for testing
+app.get("/", (req, res) => {
+  res.send("🚀 MEROBase backend is running on Railway!");
+});
 
+// ✅ MongoDB Connection
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI;
+
+// Use environment variable first (Railway), fallback to direct URI (local dev)
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  "mongodb+srv://merouser:Mero2020@merobase.yholk94.mongodb.net/merobase?retryWrites=true&w=majority&appName=merobase";
 
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ MongoDB connected"))
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 20000, // wait longer to find Mongo server
+  })
+  .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
+    console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// ✅ Start the server
+app.listen(PORT, () =>
+  console.log(`🚀 MEROBase backend running on port ${PORT}`)
+);
