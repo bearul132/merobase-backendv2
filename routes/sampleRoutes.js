@@ -1,9 +1,11 @@
 import express from "express";
-import Sample from "../models/Sample.js"; // works now because Sample.js has default export
+import Sample from "../models/Sample.js";
 
 const router = express.Router();
 
-// Get all samples
+/* =========================
+   GET ALL SAMPLES
+========================= */
 router.get("/", async (req, res) => {
   try {
     const samples = await Sample.find();
@@ -14,11 +16,57 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Add new sample
+/* =========================
+   ADD NEW SAMPLE
+========================= */
 router.post("/", async (req, res) => {
   try {
-    const newSample = new Sample(req.body);
+    const {
+      sampleID,
+      sampleType,
+      sampleName,
+      species,
+      genus,
+      family,
+      kingdom,
+      projectType,
+      collectorName,
+      collectionDate,
+      latitude,
+      longitude,
+      samplePhoto,
+
+      storageLocation,
+
+      morphology = {},
+      microbiology = {},
+      molecular = {},
+    } = req.body;
+
+    const newSample = new Sample({
+      sampleID,
+      sampleType,
+      sampleName,
+      species,
+      genus,
+      family,
+      kingdom,
+      projectType,
+      collectorName,
+      collectionDate,
+      latitude,
+      longitude,
+      samplePhoto,
+
+      storageLocation,
+
+      morphology,
+      microbiology,
+      molecular,
+    });
+
     await newSample.save();
+
     console.log("✅ New sample added:", newSample.sampleID);
     res.status(201).json(newSample);
   } catch (err) {
@@ -27,18 +75,38 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update sample by sampleID (with lastEdited)
+/* =========================
+   UPDATE SAMPLE BY sampleID
+========================= */
 router.put("/:sampleID", async (req, res) => {
   try {
+    // Ensure nested objects exist even if frontend sends nothing
     const updatedData = {
       ...req.body,
-      lastEdited: new Date(), // ✅ Automatically set lastEdited timestamp
+      lastEdited: new Date(),
+
+      morphology: {
+        semPhotos: req.body?.morphology?.semPhotos || [],
+        microscopePhotos: req.body?.morphology?.microscopePhotos || [],
+      },
+
+      microbiology: {
+        petriDishPhotos: req.body?.microbiology?.petriDishPhotos || [],
+        isolatedDescription: req.body?.microbiology?.isolatedDescription || "",
+        isolatedProfile: req.body?.microbiology?.isolatedProfile || "",
+        gramStainingPhoto: req.body?.microbiology?.gramStainingPhoto || "",
+      },
+
+      molecular: {
+        phyloTreePhoto: req.body?.molecular?.phyloTreePhoto || "",
+        phyloTreeDescription: req.body?.molecular?.phyloTreeDescription || "",
+      },
     };
 
     const updated = await Sample.findOneAndUpdate(
       { sampleID: req.params.sampleID },
       updatedData,
-      { new: true } // ✅ Return updated document
+      { new: true }
     );
 
     if (!updated) {
@@ -46,22 +114,28 @@ router.put("/:sampleID", async (req, res) => {
       return res.status(404).json({ message: "Sample not found" });
     }
 
-    console.log("✅ Sample updated:", updated.sampleID);
-    res.json(updated); // ✅ Send updated sample back
+    console.log("✏️ Sample updated:", updated.sampleID);
+    res.json(updated);
   } catch (err) {
     console.error("❌ Error updating sample:", err.message);
     res.status(400).json({ error: err.message });
   }
 });
 
-// Delete sample by sampleID
+/* =========================
+   DELETE SAMPLE BY sampleID
+========================= */
 router.delete("/:sampleID", async (req, res) => {
   try {
-    const deleted = await Sample.findOneAndDelete({ sampleID: req.params.sampleID });
+    const deleted = await Sample.findOneAndDelete({
+      sampleID: req.params.sampleID,
+    });
+
     if (!deleted) {
       console.warn(`⚠️ Sample with ID ${req.params.sampleID} not found`);
       return res.status(404).json({ message: "Sample not found" });
     }
+
     console.log("🗑 Sample deleted:", deleted.sampleID);
     res.json({ message: "Sample deleted" });
   } catch (err) {
@@ -70,7 +144,9 @@ router.delete("/:sampleID", async (req, res) => {
   }
 });
 
-// 🧹 Delete ALL samples
+/* =========================
+   DELETE ALL SAMPLES
+========================= */
 router.delete("/", async (req, res) => {
   try {
     await Sample.deleteMany({});

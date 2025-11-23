@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 
 const sampleSchema = new mongoose.Schema({
-  sampleID: { type: String, unique: true, required: true }, // unique ID for each sample
+  sampleID: { type: String, unique: true, required: true },
+
+  // Existing BASIC sample data
   sampleType: {
     type: String,
     enum: ["Biological", "Non-Biological"],
@@ -12,23 +14,61 @@ const sampleSchema = new mongoose.Schema({
   genus: { type: String },
   family: { type: String },
   kingdom: { type: String, required: true },
+
   projectType: { type: String, required: true },
   collectorName: { type: String, required: true },
   collectionDate: { type: Date, required: true },
-  latitude: { type: Number, required: true }, // changed from String to Number
-  longitude: { type: Number, required: true }, // changed from String to Number
+
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+
+  // MAIN sample photo
   samplePhoto: { type: String },
-  semPhoto: { type: String },
-  isolatedPhoto: { type: String },
-  lastEdited: { type: Date, default: Date.now }, // automatically set when document is created
-  // Optional GeoJSON field for future geospatial queries
+
+  // NEW FIELD — where the sample is stored
+  storageLocation: {
+    type: String,
+    enum: [
+      "Cool Room",
+      "Freezer -20°C",
+      "Deep Freezer -80°C",
+      "SEM Room",
+      "Gram Staining Boxes",
+    ],
+    default: "Cool Room",
+  },
+
+  // NEW SECTION — Morphology Documentation
+  morphology: {
+    semPhotos: [{ type: String }],            // array of URLs
+    microscopePhotos: [{ type: String }],     // array of URLs
+  },
+
+  // NEW SECTION — Microbiology Documentation
+  microbiology: {
+    petriDishPhotos: [{ type: String }],
+    isolatedDescription: { type: String },
+    isolatedProfile: { type: String },
+    gramStainingPhoto: { type: String },
+  },
+
+  // NEW SECTION — Molecular Documentation
+  molecular: {
+    phyloTreePhoto: { type: String },
+    phyloTreeDescription: { type: String },
+  },
+
+  // System fields
+  lastEdited: { type: Date, default: Date.now },
+
+  // GEOJSON location (kept from your version)
   location: {
     type: { type: String, enum: ["Point"], default: "Point" },
     coordinates: { type: [Number], index: "2dsphere" },
   },
 });
 
-// Middleware to automatically set GeoJSON location whenever latitude/longitude are provided
+// Auto-update GeoJSON when lat/lng provided
 sampleSchema.pre("save", function (next) {
   if (this.latitude && this.longitude) {
     this.location = {
