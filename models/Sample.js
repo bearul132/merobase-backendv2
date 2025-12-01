@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const sampleSchema = new mongoose.Schema({
   sampleID: { type: String, unique: true, required: true },
 
-  // Existing BASIC sample data
+  // BASIC sample metadata
   sampleType: {
     type: String,
     enum: ["Biological", "Non-Biological"],
@@ -14,7 +14,6 @@ const sampleSchema = new mongoose.Schema({
   genus: { type: String },
   family: { type: String },
   kingdom: { type: String, required: true },
-
   projectType: { type: String, required: true },
   collectorName: { type: String, required: true },
   collectionDate: { type: Date, required: true },
@@ -25,7 +24,7 @@ const sampleSchema = new mongoose.Schema({
   // MAIN sample photo
   samplePhoto: { type: String },
 
-  // NEW FIELD — where the sample is stored
+  // STORAGE LOCATION
   storageLocation: {
     type: String,
     enum: [
@@ -38,37 +37,77 @@ const sampleSchema = new mongoose.Schema({
     default: "Cool Room",
   },
 
-  // NEW SECTION — Morphology Documentation
+  // ------------------------
+  //   🔬 Morphology Section
+  // ------------------------
   morphology: {
-    semPhotos: [{ type: String }],            // array of URLs
-    microscopePhotos: [{ type: String }],     // array of URLs
+    semPhotos: [{ type: String }],          // array of URLs
+    microscopePhotos: [{ type: String }],   // array of URLs
   },
 
-  // NEW SECTION — Microbiology Documentation
+  // ------------------------
+  //   🦠 Microbiology Section
+  // ------------------------
   microbiology: {
     petriDishPhotos: [{ type: String }],
-    isolatedDescription: { type: String },
-    isolatedProfile: { type: String },
     gramStainingPhoto: { type: String },
+
+    isolatedDescription: {
+      colonyShape: String,
+      margin: String,
+      elevation: String,
+      color: String,
+      texture: String,
+      microscopicShape: String,
+      arrangement: String,
+    },
+
+    isolatedProfile: {
+      gramReaction: String,
+      motility: String,
+      oxygenRequirement: String,
+      halotolerance: String,
+      temperaturePreference: String,
+      growthMedia: String,
+      biochemicalTests: {
+        catalase: Boolean,
+        oxidase: Boolean,
+        urease: Boolean,
+        indole: Boolean,
+        citrate: Boolean,
+        methylRed: Boolean,
+        vogesProskauer: Boolean,
+        coagulase: Boolean,
+        gelatinase: Boolean,
+      },
+    },
   },
 
-  // NEW SECTION — Molecular Documentation
+  // ------------------------
+  //   🧬 Molecular Section
+  // ------------------------
   molecular: {
-    phyloTreePhoto: { type: String },
-    phyloTreeDescription: { type: String },
+    geneMarker: String,
+    primerSet: String,
+    pcrConditions: String,
+    sequencingPlatform: String,
+    gelElectrophoresisPhoto: String,
+    phyloTreePhoto: String,
+    phyloTreeDescription: String,
+    sequenceFiles: [{ type: String }], // fasta/genbank URLs
   },
 
-  // System fields
+  // SYSTEM FIELDS
   lastEdited: { type: Date, default: Date.now },
 
-  // GEOJSON location (kept from your version)
+  // GEOJSON LOCATION
   location: {
     type: { type: String, enum: ["Point"], default: "Point" },
     coordinates: { type: [Number], index: "2dsphere" },
   },
 });
 
-// Auto-update GeoJSON when lat/lng provided
+// Auto-set GeoJSON from lat/lng
 sampleSchema.pre("save", function (next) {
   if (this.latitude && this.longitude) {
     this.location = {
